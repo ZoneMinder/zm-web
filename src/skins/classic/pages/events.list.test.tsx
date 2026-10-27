@@ -16,6 +16,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useEventsColumnsStore } from '@/stores/eventsColumns';
 import { useEventPlaybackStore } from '@/stores/eventPlayback';
 import { useUiStore } from '@/stores/ui';
+import { chooseOptions, chosenChips, chosenOptionLabels } from '@/test/chosen';
 
 /* ---------------------------------------------------------------- router */
 
@@ -211,7 +212,7 @@ describe('ClassicEventsListPage — rendering', () => {
     await mountAndSettle();
 
     expect(within(screen.getByLabelText(/^Group/)).getByRole('option', { name: 'Front Yard' })).toBeInTheDocument();
-    expect(within(screen.getByLabelText(/^Monitor =/)).getByRole('option', { name: 'Driveway' })).toBeInTheDocument();
+    expect(await chosenOptionLabels(userEvent.setup(), screen.getByLabelText(/^Monitor =/))).toContain('Driveway');
     expect(within(screen.getByLabelText(/^Tags/)).getByRole('option', { name: 'person' })).toBeInTheDocument();
     const archived = screen.getByLabelText(/Archive Status/);
     expect(within(archived).getByRole('option', { name: 'Unarchived Only' })).toBeInTheDocument();
@@ -242,7 +243,7 @@ describe('ClassicEventsListPage — filters', () => {
     stub();
     await mountAndSettle();
 
-    await user.selectOptions(screen.getByLabelText(/^Monitor =/), '2');
+    await chooseOptions(user, screen.getByLabelText(/^Monitor =/), '2');
     await waitFor(() =>
       expect(eventRequests.at(-1)?.get('monitor_id')).toBe('2'));
   });
@@ -274,8 +275,8 @@ describe('ClassicEventsListPage — filters', () => {
 
     // Legacy's Notes box is a fixed multi-select, not a free-text field.
     const notes = screen.getByLabelText(/^Notes/);
-    expect(within(notes).getByRole('option', { name: 'Any Object' })).toBeInTheDocument();
-    await user.selectOptions(notes, ['detected']);
+    expect(await chosenOptionLabels(user, notes)).toContain('Any Object');
+    await chooseOptions(user, notes, 'detected');
     await waitFor(() => expect(eventRequests.at(-1)?.get('notes')).toBe('detected'));
   });
 
@@ -289,7 +290,7 @@ describe('ClassicEventsListPage — filters', () => {
     }));
     await mountAndSettle();
 
-    await user.selectOptions(screen.getByLabelText(/^Notes/), ['Motion', 'Linked']);
+    await chooseOptions(user, screen.getByLabelText(/^Notes/), ['Motion', 'Linked']);
     await waitFor(() => expect(previewBody).not.toBeNull());
     expect(JSON.stringify(previewBody)).toContain('%Motion%');
     expect(JSON.stringify(previewBody)).toContain('%Linked%');
@@ -301,7 +302,7 @@ describe('ClassicEventsListPage — filters', () => {
     stub();
     await mountAndSettle();
 
-    await user.selectOptions(screen.getByLabelText(/^Notes/), ['Motion']);
+    await chooseOptions(user, screen.getByLabelText(/^Notes/), 'Motion');
     await waitFor(() => expect(eventRequests.at(-1)?.get('notes')).toBe('Motion'));
     await user.click(screen.getByRole('button', { name: 'Clear Notes' }));
     await waitFor(() => expect(eventRequests.at(-1)?.has('notes')).toBe(false));
@@ -321,11 +322,11 @@ describe('ClassicEventsListPage — filters', () => {
     stub();
     await mountAndSettle();
 
-    await user.selectOptions(screen.getByLabelText(/^Monitor =/), '2');
-    await waitFor(() => expect(screen.getByLabelText(/^Monitor =/)).toHaveValue(['2']));
+    await chooseOptions(user, screen.getByLabelText(/^Monitor =/), '2');
+    await waitFor(() => expect(chosenChips(screen.getByLabelText(/^Monitor =/))).toEqual(['Driveway']));
 
     await user.click(screen.getByRole('button', { name: 'Reset filters' }));
-    await waitFor(() => expect(screen.getByLabelText(/^Monitor =/)).toHaveValue([]));
+    await waitFor(() => expect(chosenChips(screen.getByLabelText(/^Monitor =/))).toEqual([]));
   });
 
   it('keeps two picked monitors in the search and lists them through /filters/preview', async () => {
@@ -338,8 +339,8 @@ describe('ClassicEventsListPage — filters', () => {
     }));
     await mountAndSettle();
 
-    await user.selectOptions(screen.getByLabelText(/^Monitor =/), ['1', '2']);
-    await waitFor(() => expect(screen.getByLabelText(/^Monitor =/)).toHaveValue(['1', '2']));
+    await chooseOptions(user, screen.getByLabelText(/^Monitor =/), ['1', '2']);
+    await waitFor(() => expect(chosenChips(screen.getByLabelText(/^Monitor =/))).toHaveLength(2));
 
     await waitFor(() => expect(previewBody).not.toBeNull());
     expect(previewBody).toMatchObject({

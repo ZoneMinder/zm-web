@@ -10,4 +10,6 @@ export { ClassicPagination } from './Pagination';
 export { CLASSIC_PAGE_SIZES, PAGE_SIZE_ALL, pageCount, pageWindow, pageNumbers } from './paginationMath';
 export { ClassicPage, ClassicHeader } from './Page';
 export { ClassicFilterRow } from './FilterRow';
+export { ClassicChosenSelect } from './ChosenSelect';
+export type { ChosenOption } from './ChosenSelect';
 export { ClassicDropdown, classicMenuItemClass } from './Dropdown';

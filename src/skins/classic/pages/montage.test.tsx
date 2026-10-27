@@ -8,6 +8,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { chooseOptions } from '@/test/chosen';
 import { renderWithProviders } from '@/test/render';
 import { useAuthStore } from '@/stores/auth';
 import { useToastStore } from '@/components/common/toastStore';
@@ -176,7 +177,7 @@ describe('ClassicMontagePage', () => {
     await mount();
 
     await screen.findByTestId('montage-classic-cell-2');
-    await user.selectOptions(screen.getByRole('listbox', { name: 'Monitor' }), '2');
+    await chooseOptions(user, screen.getByRole('combobox', { name: 'Monitor' }), '2');
 
     await waitFor(() => expect(screen.queryByTestId('montage-classic-cell-1')).toBeNull());
     expect(screen.getByTestId('montage-classic-cell-2')).toBeInTheDocument();

@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { test, expect, gotoSkin, SKINS, seededOnly, type Skin } from './fixtures';
+import { test, expect, gotoSkin, pickChosen, SKINS, seededOnly, type Skin } from './fixtures';
 import { SEED } from './seed/seed-data';
 
 /**
@@ -58,7 +58,7 @@ test.describe('Console', () => {
   });
 
   // Both skins filter by group; e2e-Front holds only the front door. Modern
-  // uses a listbox popover, classic the legacy <select>.
+  // uses a listbox popover, classic legacy's Chosen multi-select.
   const pickFrontGroup = {
     modern: async (page: Page) => {
       // The chips live behind the status line's Filters disclosure.
@@ -69,7 +69,7 @@ test.describe('Console', () => {
       await page.keyboard.press('Escape');
     },
     classic: async (page: Page) => {
-      await page.getByLabel(/^groupid/i).selectOption({ label: 'e2e-Front' });
+      await pickChosen(page, /^groupid/i, 'e2e-Front');
     },
   } satisfies Record<Skin, (page: Page) => Promise<void>>;
 

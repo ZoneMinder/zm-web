@@ -11,6 +11,7 @@ import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import type { ReactNode } from 'react';
+import { chooseOptions, chosenChips } from '@/test/chosen';
 import { renderWithProviders } from '@/test/render';
 import { useAuthStore } from '@/stores/auth';
 import { useMonitorFilterStore } from '@/stores/monitorFilter';
@@ -352,7 +353,7 @@ describe('ClassicConsolePage — search, filter row and paging', () => {
     await mountAndSettle();
 
     expect(screen.getByRole('group', { name: 'Monitor filter bar' })).toBeInTheDocument();
-    await user.selectOptions(screen.getByLabelText('Recording'), 'OnMotion');
+    await chooseOptions(user, screen.getByRole('combobox', { name: 'Recording' }), 'OnMotion');
     await waitFor(() => expect(screen.queryByTestId('console-row-2')).toBeNull());
     expect(screen.getByTestId('console-row-1')).toBeInTheDocument();
 
@@ -609,8 +610,8 @@ describe('ClassicConsolePage — verbs', () => {
     expect(screen.getByTestId('console-row-1')).toBeInTheDocument();
     expect(screen.getByTestId('console-row-3')).toBeInTheDocument();
     // The Monitor filter is a multi-select (legacy's Chosen widget), so the
-    // checked set shows as two selected options; nothing was written.
-    expect(screen.getByRole('listbox', { name: 'Monitor' })).toHaveValue(['1', '3']);
+    // checked set shows as two chips; nothing was written.
+    expect(chosenChips(screen.getByRole('combobox', { name: 'Monitor' }))).toEqual(['1 Front Door', '3 Garage']);
     expect(calls).toEqual([]);
     expect(screen.getByRole('checkbox', { name: 'Select Front Door' })).not.toBeChecked();
 

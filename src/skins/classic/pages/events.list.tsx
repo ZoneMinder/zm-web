@@ -19,6 +19,7 @@ import { useCanGoBack } from '@/features/nav/useCanGoBack';
 import { useUiStore } from '@/stores/ui';
 import { ClassicButton, ClassicClearableInput, ClassicFilterField, ClassicPager } from '@/skins/classic/components/events/primitives';
 import { classicSelect } from '@/skins/classic/components/events/styles';
+import { ClassicChosenSelect } from '@/skins/classic/components/ChosenSelect';
 
 /**
  * Events list — classic skin, laid out like legacy `?view=events`: the
@@ -121,20 +122,16 @@ export default function ClassicEventsListPage() {
             )}
             <ClassicFilterField label={<>{t('Monitor')} <span className="text-zinc-500">=</span></>} htmlFor="ev-monitor">
               {/* Legacy: a chosen multi-select whose placeholder reads "All Monitors"; nothing selected means every monitor. */}
-              <div className="flex items-start gap-1">
-                <select
-                  id="ev-monitor"
-                  multiple
-                  size={3}
-                  title={t('All Monitors')}
-                  value={s.monitorFilter.map(String)}
-                  onChange={(e) => s.setMonitorFilter(Array.from(e.target.selectedOptions, (o) => Number(o.value)))}
-                  className={clsx(classicSelect, 'w-40')}
-                >
-                  {s.monitors.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-                </select>
-                <TermClearButton label={t('Monitor')} onClear={() => s.setMonitorFilter([])} disabled={s.monitorFilter.length === 0} />
-              </div>
+              <ClassicChosenSelect
+                id="ev-monitor"
+                options={s.monitors.map((m) => ({ value: String(m.id), label: m.name }))}
+                value={s.monitorFilter.map(String)}
+                onChange={(next) => s.setMonitorFilter(next.map(Number))}
+                placeholder={t('All Monitors')}
+                onClear={() => s.setMonitorFilter([])}
+                clearLabel={t('Clear {{field}}', { field: t('Monitor') })}
+                className="w-40 text-zinc-900"
+              />
             </ClassicFilterField>
             <ClassicFilterField label={<>{t('Start Date/Time')} <span className="text-zinc-500">&gt;=</span></>} htmlFor="ev-start">
               <ClassicClearableInput id="ev-start" type="datetime-local" value={s.dateInputValue} onChange={s.setDateInput} ariaLabel={t('Events starting after')} className="w-48" />
@@ -153,20 +150,16 @@ export default function ClassicEventsListPage() {
             <ClassicFilterField label={<>{t('Notes')} <span className="text-zinc-500">LIKE</span></>} htmlFor="ev-notes">
               {/* Legacy's Notes box is a fixed multi-select of event types,
                   each ORed as `Notes LIKE %type%` (Filter.php:1380-1400). */}
-              <div className="flex items-start gap-1">
-                <select
-                  id="ev-notes"
-                  multiple
-                  size={3}
-                  title={t('Event Type')}
-                  value={s.notesFilter}
-                  onChange={(e) => s.setNotesFilter(Array.from(e.target.selectedOptions, (o) => o.value))}
-                  className={clsx(classicSelect, 'w-36')}
-                >
-                  {noteTypes.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                </select>
-                <TermClearButton label={t('Notes')} onClear={() => s.setNotesFilter([])} disabled={s.notesFilter.length === 0} />
-              </div>
+              <ClassicChosenSelect
+                id="ev-notes"
+                options={noteTypes}
+                value={s.notesFilter}
+                onChange={s.setNotesFilter}
+                placeholder={t('Event Type')}
+                onClear={() => s.setNotesFilter([])}
+                clearLabel={t('Clear {{field}}', { field: t('Notes') })}
+                className="w-36 text-zinc-900"
+              />
             </ClassicFilterField>
             <ClassicFilterField label={<>{t('Tags')} <span className="text-zinc-500">=</span></>} htmlFor="ev-tag">
               <div className="flex items-center gap-1">
