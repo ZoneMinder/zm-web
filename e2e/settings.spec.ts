@@ -233,8 +233,9 @@ test.describe('Settings — PTZ control profiles', () => {
       await page.getByRole('searchbox').first().fill('e2e-PTZ');
       const row = page.getByRole('row', { name: /e2e-PTZ Dome \(Pelco-D\)/ });
       await expect(row).toBeVisible();
-      // The stock Pelco-D copy is an Ffmpeg profile that can move.
-      await expect(row).toContainText('Ffmpeg');
+      // The stock Pelco-D copy speaks Pelco-D. (Not its Type: ZoneMinder
+      // 1.39.39 dropped Controls.Type, so zm-api returns it as null.)
+      await expect(row).toContainText('PelcoD');
       // Everything else is filtered out.
       await expect(page.getByRole('row', { name: /^HikVision/ })).toHaveCount(0);
     });

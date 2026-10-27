@@ -88,7 +88,7 @@ export function usePtzControlsPage() {
       ? controls.filter((c) =>
         c.name.toLowerCase().includes(q)
         || (c.protocol ?? '').toLowerCase().includes(q)
-        || c.type.toLowerCase().includes(q))
+        || (c.type ?? '').toLowerCase().includes(q))
       : controls;
     const dir = sortDir === 'asc' ? 1 : -1;
     const sorted = [...filtered].sort((a, b) => {

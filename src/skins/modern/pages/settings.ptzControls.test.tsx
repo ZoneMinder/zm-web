@@ -126,6 +126,20 @@ describe('PTZ controls page — editor and guards', () => {
     expect(names()).toEqual(['Bravo']);
   });
 
+  it('searches profiles that have no type, as ZoneMinder 1.39.39+ returns them', async () => {
+    seedControls([
+      { id: 1, name: 'Pelco-D', type: null, protocol: 'PelcoD' },
+      { id: 2, name: 'Axis', type: null, protocol: 'AxisV2' },
+    ]);
+    const user = userEvent.setup();
+    renderPage();
+    await waitFor(() => expect(screen.getByText('Pelco-D')).toBeInTheDocument());
+    await user.type(screen.getByRole('searchbox', { name: /search control profiles/i }), 'pelco');
+    expect(screen.getByRole('row', { name: /Pelco-D/ })).toBeInTheDocument();
+    expect(screen.queryByRole('row', { name: /Axis/ })).not.toBeInTheDocument();
+    expect(screen.queryByText('Cannot reach the server.')).not.toBeInTheDocument();
+  });
+
   it('Add profile opens the tabbed editor at ?id=new and POSTs every field', async () => {
     seedControls([]);
     let body: Record<string, unknown> | null = null;
