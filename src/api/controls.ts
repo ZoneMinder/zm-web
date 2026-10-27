@@ -13,7 +13,8 @@ import type { PaginatedResponse } from '@/types';
 export interface Control {
   id: number;
   name: string;
-  type: string;
+  /** Null from ZoneMinder 1.39.39 on, which dropped `Controls.Type`. */
+  type: string | null;
   protocol?: string | null;
 
   // Movement capabilities
