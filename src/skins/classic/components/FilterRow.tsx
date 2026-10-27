@@ -1,7 +1,6 @@
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import { clsx } from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
 import type { Monitor } from '@/types';
 import {
   ANALYSING_OPTIONS,
@@ -12,6 +11,7 @@ import {
   type MonitorFilterRowState,
 } from '@/features/monitors/useMonitorFilterRow';
 import { classicInputClass } from './Select';
+import { ClassicChosenSelect } from './ChosenSelect';
 
 interface ClassicFilterRowProps {
   /** Every monitor — the Monitor select lists them. */
@@ -146,32 +146,24 @@ function SelectField({
   wide?: boolean;
 }) {
   const { t } = useTranslation();
+  const id = useId();
+  // Not a wrapping <label>: the chips' remove buttons would be labelable
+  // descendants ahead of the input and take the field's name.
   return (
-    <Field label={label}>
-      <span className={clsx('inline-flex items-stretch rounded-sm border border-zinc-400 bg-white', wide ? 'w-64' : 'w-36')}>
-        <select
-          multiple
-          size={3}
-          value={value}
-          onChange={(e) => set(field, [...e.target.selectedOptions].map((o) => o.value))}
-          className="flex-1 min-w-0 bg-transparent px-1.5 py-0.5 text-sm text-zinc-900 focus:outline-none"
-        >
-          {/* No "All" option: an empty selection is "all", as legacy's
-              Chosen placeholder says. */}
-          {options.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
-        <button
-          type="button"
-          onClick={() => clear(field)}
-          disabled={value.length === 0}
-          aria-label={t('Clear {{label}}', { label: label.toLocaleLowerCase() })}
-          className="px-1.5 border-s border-zinc-300 text-zinc-600 hover:bg-zinc-100 disabled:text-zinc-300"
-        >
-          <X size={12} aria-hidden />
-        </button>
-      </span>
-    </Field>
+    <div className="flex flex-col items-center gap-0.5 text-sm">
+      <label htmlFor={id} className="font-semibold">{label}</label>
+      {/* No "All" option: an empty selection is "all", as legacy's Chosen
+          placeholder says. */}
+      <ClassicChosenSelect
+        id={id}
+        options={options}
+        value={value}
+        onChange={(next) => set(field, next)}
+        placeholder={t('All')}
+        onClear={() => clear(field)}
+        clearLabel={t('Clear {{label}}', { label: label.toLocaleLowerCase() })}
+        className={clsx('text-zinc-900', wide ? 'w-64' : 'w-36')}
+      />
+    </div>
   );
 }

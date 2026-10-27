@@ -9,6 +9,7 @@ import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { chooseOptions } from '@/test/chosen';
 import { renderWithProviders } from '@/test/render';
 import { useAuthStore } from '@/stores/auth';
 import { useToastStore } from '@/components/common/toastStore';
@@ -336,7 +337,7 @@ describe('ClassicMontageReviewPage', () => {
     await mount();
 
     await screen.findByTitle('2 Cam 2');
-    await user.selectOptions(screen.getByRole('listbox', { name: 'Monitor' }), '1');
+    await chooseOptions(user, screen.getByRole('combobox', { name: 'Monitor' }), '1');
 
     await waitFor(() => expect(screen.queryByTitle('2 Cam 2')).toBeNull());
     expect(screen.getByTitle('1 Cam 1')).toBeInTheDocument();
@@ -348,7 +349,7 @@ describe('ClassicMontageReviewPage', () => {
     await mount();
 
     await screen.findByTitle('1 Cam 1');
-    await user.selectOptions(screen.getByRole('listbox', { name: 'GroupId' }), '5');
+    await chooseOptions(user, screen.getByRole('combobox', { name: 'GroupId' }), '5');
     await user.type(screen.getByRole('textbox', { name: 'Name' }), 'nothing-matches-this');
 
     expect(await screen.findByText('Select one or more monitors to review.')).toBeInTheDocument();

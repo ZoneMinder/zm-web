@@ -1,5 +1,5 @@
 import type { Page, Response } from '@playwright/test';
-import { test, expect, eventLink, gotoSkin, SKINS, seededOnly, type Skin } from './fixtures';
+import { test, expect, eventLink, gotoSkin, pickChosen, SKINS, seededOnly, type Skin } from './fixtures';
 import { SEED } from './seed/seed-data';
 
 /**
@@ -28,7 +28,7 @@ const UI = {
   },
   classic: {
     pickMonitor: async (p: Page, name: string) => {
-      await p.getByLabel('Monitor =', { exact: true }).selectOption({ label: name });
+      await pickChosen(p, 'Monitor =', name);
     },
     sortByDuration: (p: Page) => p.getByRole('button', { name: /^duration/i }),
     perPage: (p: Page) => p.getByLabel(/rows per page/i).first(),

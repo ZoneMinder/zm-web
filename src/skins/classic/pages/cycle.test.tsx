@@ -9,6 +9,7 @@ import userEvent from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import type { ReactNode } from 'react';
+import { chooseOptions } from '@/test/chosen';
 import { renderWithProviders } from '@/test/render';
 import { useAuthStore } from '@/stores/auth';
 import { useMonitorFilterStore } from '@/stores/monitorFilter';
@@ -240,7 +241,7 @@ describe('ClassicCyclePage', () => {
     await mount();
     await pills();
 
-    await user.selectOptions(screen.getByLabelText('Recording'), 'OnMotion');
+    await chooseOptions(user, screen.getByRole('combobox', { name: 'Recording' }), 'OnMotion');
     await waitFor(async () => expect((await pills()).map((b) => b.textContent)).toEqual(['Front Door']));
     // A single monitor means no auto-advance countdown.
     expect(screen.queryByText(/^\d+s$/)).toBeNull();

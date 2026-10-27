@@ -184,6 +184,17 @@ export const test = base.extend<{ loggedInPage: Page; viewerPage: Page }, Worker
 export const ANONYMOUS = { cookies: [], origins: [] };
 
 /**
+ * Picks an option in a classic Chosen-style multi-select (legacy's Chosen
+ * widget): open the combobox, click the option. Stands in for
+ * `selectOption` on the native `<select multiple>` it replaced.
+ */
+export async function pickChosen(page: Page, label: string | RegExp, option: string): Promise<void> {
+  const box = page.getByRole('combobox', { name: label, exact: typeof label === 'string' });
+  await box.click();
+  await page.getByRole('listbox').getByRole('option', { name: option, exact: true }).click();
+}
+
+/**
  * The row link for an event, in either skin.
  *
  * Both event tables now carry the list context on every row link (the

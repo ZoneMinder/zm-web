@@ -1,4 +1,4 @@
-import { test, expect, gotoSkin, seededOnly } from './fixtures';
+import { test, expect, gotoSkin, pickChosen, seededOnly } from './fixtures';
 import { SEED } from './seed/seed-data';
 
 /**
@@ -54,7 +54,7 @@ test.describe('Montage', () => {
   }) => {
     await gotoSkin(page, '/montage', 'classic');
 
-    await page.getByLabel(/^groupid/i).selectOption({ label: 'e2e-Front' });
+    await pickChosen(page, /^groupid/i, 'e2e-Front');
     await expect(page.getByTestId(`montage-classic-cell-${SEED.monitors.frontDoor}`)).toBeVisible();
     await expect(page.getByTestId(`montage-classic-cell-${SEED.monitors.garage}`)).toHaveCount(0);
   });
