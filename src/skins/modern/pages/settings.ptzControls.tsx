@@ -55,7 +55,7 @@ export default function SettingsPtzControlsPage() {
               type="search"
               value={p.query}
               onChange={(e) => p.setQuery(e.target.value)}
-              placeholder={t('Search name, protocol or type…')}
+              placeholder={t('Search name or protocol…')}
               aria-label={t('Search control profiles')}
               className={clsx(fieldClasses('sm'), 'ps-8')}
             />
@@ -75,7 +75,6 @@ export default function SettingsPtzControlsPage() {
                   <tr>
                     <SortTh k="id" p={p} className="w-12">{t('ID')}</SortTh>
                     <SortTh k="name" p={p}>{t('Name')}</SortTh>
-                    <SortTh k="type" p={p}>{t('Type')}</SortTh>
                     <SortTh k="protocol" p={p}>{t('Protocol')}</SortTh>
                     <th className={th}>{t('Capabilities')}</th>
                     <th className={clsx(th, 'text-end')}>{t('In use')}</th>
@@ -93,7 +92,6 @@ export default function SettingsPtzControlsPage() {
                           </button>
                         </RequirePerm>
                       </td>
-                      <td className="px-2 py-2 text-fg-muted">{c.type}</td>
                       <td className="px-2 py-2 font-mono text-xs text-fg-muted">{c.protocol ?? '—'}</td>
                       <td className="px-2 py-2 text-xs text-fg-muted">{summarizeCapabilities(c)}</td>
                       <td
@@ -212,7 +210,6 @@ const EDITOR_CLASSES = {
   row: 'grid grid-cols-[11rem_1fr] items-center gap-3',
   label: 'text-sm text-fg-muted text-end',
   input: 'px-3 py-1.5 bg-surface border border-border-subtle rounded text-fg text-sm focus:outline-none focus:border-accent transition-colors',
-  select: 'px-3 py-1.5 bg-surface border border-border-subtle rounded text-fg text-sm focus:outline-none focus:border-accent transition-colors w-40',
   checkbox: 'w-4 h-4 accent-accent justify-self-start',
 };
 

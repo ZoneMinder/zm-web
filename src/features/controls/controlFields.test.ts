@@ -4,7 +4,6 @@ import type { Control } from '@/api/controls';
 import {
   CONTROL_FIELD_KEYS,
   CONTROL_TABS,
-  CONTROL_TYPES,
   controlFieldLabel,
   controlTabLabel,
   controlToForm,
@@ -16,7 +15,7 @@ import {
 const t = i18next.t.bind(i18next);
 
 const sample: Control = {
-  id: 3, name: 'Pelco-P', type: 'Local', protocol: 'PelcoP',
+  id: 3, name: 'Pelco-P', protocol: 'PelcoP',
   can_pan: 1, can_tilt: 1, can_zoom: 0, can_move: 1, can_move_abs: 0, can_move_rel: 1, can_move_con: 1, can_move_diag: 1, can_move_map: 0,
   can_auto_zoom: 0, can_zoom_abs: 0, can_zoom_rel: 0, can_zoom_con: 0, has_zoom_speed: 0,
   can_focus: 0, can_auto_focus: 0, can_focus_abs: 0, can_focus_rel: 0, can_focus_con: 0, has_focus_speed: 0,
@@ -43,12 +42,12 @@ describe('CONTROL_TABS', () => {
     expect(CONTROL_TABS.find((tab) => tab.key === 'pan')!.fields).toHaveLength(10);
     expect(CONTROL_TABS.find((tab) => tab.key === 'zoom')!.fields).toHaveLength(12);
     expect(CONTROL_TABS.find((tab) => tab.key === 'focus')!.fields).toHaveLength(12);
-    expect(CONTROL_FIELD_KEYS).toHaveLength(97);
+    expect(CONTROL_FIELD_KEYS).toHaveLength(96);
   });
 
-  it('offers exactly the five types legacy lists, and no Misc tab', () => {
-    // `controlcap.php:219-225`: Local, Remote, Ffmpeg, Libvlc, cURL.
-    expect([...CONTROL_TYPES]).toEqual(['Local', 'Remote', 'Ffmpeg', 'Libvlc', 'cURL']);
+  it('has no Type field and no Misc tab', () => {
+    // ZoneMinder 1.39.39 dropped Controls.Type and its row in controlcap.php.
+    expect(CONTROL_FIELD_KEYS).not.toContain('type');
     expect(CONTROL_TABS.some((tab) => (tab.key as string) === 'misc')).toBe(false);
   });
 
@@ -79,9 +78,9 @@ describe('CONTROL_TABS', () => {
 });
 
 describe('form round trip', () => {
-  it('starts blank with Local type and flags off', () => {
+  it('starts blank with flags off and no type', () => {
     const form = emptyControlForm();
-    expect(form.type).toBe('Local');
+    expect(form).not.toHaveProperty('type');
     expect(form.can_pan).toBe(0);
     expect(form.min_pan_range).toBe('');
     expect(form.name).toBe('');

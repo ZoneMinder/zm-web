@@ -48,7 +48,7 @@ export function useControlEditor(editing: Control | null, onSaved: (saved: Contr
   });
 
   const name = typeof values.name === 'string' ? values.name.trim() : '';
-  /** Legacy requires a name; the backend requires name + type. */
+  /** Legacy and the backend both require only a name. */
   const validationError = name ? null : t('Name is required');
 
   return {

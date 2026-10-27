@@ -198,7 +198,7 @@ export function makeControl(overrides: Partial<Control> = {}): Control {
     ...flags,
     id: 1,
     name: 'ONVIF PTZ',
-    type: 'Ffmpeg',
+    type: null,
     protocol: 'onvif',
     can_pan: 1,
     can_tilt: 1,

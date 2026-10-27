@@ -65,7 +65,8 @@ const paged = <T,>(items: T[], over: Record<string, number> = {}) => ({
 /** A Control with every capability flag zeroed unless overridden. */
 function mkControl(over: Record<string, unknown>) {
   const base: Record<string, unknown> = {
-    id: 0, name: '', type: 'Local', protocol: null,
+    // zm-api returns type as null since ZoneMinder 1.39.39 dropped the column.
+    id: 0, name: '', type: null, protocol: null,
     can_pan: 0, can_tilt: 0, can_zoom: 0, can_move: 0, can_move_abs: 0, can_move_rel: 0,
     can_move_con: 0, can_move_diag: 0, can_move_map: 0,
     can_auto_zoom: 0, can_zoom_abs: 0, can_zoom_rel: 0, can_zoom_con: 0, has_zoom_speed: 0,
@@ -82,11 +83,11 @@ function mkControl(over: Record<string, unknown>) {
 
 const CONTROLS = [
   mkControl({
-    id: 5, name: 'Onvif PTZ', type: 'Ffmpeg', protocol: 'onvif',
+    id: 5, name: 'Onvif PTZ', protocol: 'onvif',
     can_move: 1, can_zoom: 1, can_focus: 1, can_iris: 0, can_white: 0,
     has_presets: 1, num_presets: 64, has_home_preset: 1,
   }),
-  mkControl({ id: 2, name: 'Amcrest HTTP', type: 'Remote', protocol: 'amcrest', can_move: 1 }),
+  mkControl({ id: 2, name: 'Amcrest HTTP', protocol: 'amcrest', can_move: 1 }),
 ];
 
 let sent: Array<{ method: string; path: string; body: Record<string, unknown> | null }> = [];
@@ -147,7 +148,8 @@ describe('ClassicSettingsPtzControlsPage', () => {
     await mount();
 
     const row = (await screen.findByRole('button', { name: 'Onvif PTZ' })).closest('tr')!;
-    expect(within(row).getByText('Ffmpeg')).toBeInTheDocument();
+    // No Type column: ZoneMinder 1.39.39 removed it from the control list.
+    expect(screen.queryByRole('columnheader', { name: /^Type/ })).toBeNull();
     expect(within(row).getByText('onvif')).toBeInTheDocument();
     // Can Move / Zoom / Focus yes; Iris / White no.
     expect(within(row).getAllByText('Yes')).toHaveLength(3);   // move, zoom, focus
@@ -187,7 +189,7 @@ describe('ClassicSettingsPtzControlsPage', () => {
     expect(names()).toEqual(['Amcrest HTTP', 'Onvif PTZ']);
   });
 
-  it('the search box filters on name, protocol and type', async () => {
+  it('the search box filters on name and protocol', async () => {
     signIn();
     seed();
     const user = userEvent.setup();
@@ -200,7 +202,7 @@ describe('ClassicSettingsPtzControlsPage', () => {
     expect(screen.getByText('Showing 1 of 2 rows')).toBeInTheDocument();
 
     await user.clear(box);
-    await user.type(box, 'ffmpeg');
+    await user.type(box, 'onvif');
     await waitFor(() => expect(screen.getByRole('button', { name: 'Onvif PTZ' })).toBeInTheDocument());
     expect(screen.queryByRole('button', { name: 'Amcrest HTTP' })).toBeNull();
 
@@ -297,7 +299,7 @@ describe('ClassicSettingsPtzControlsPage', () => {
     expect(screen.queryByRole('columnheader', { name: /^Name/ })).toBeNull();
 
     await user.type(screen.getByLabelText('Name'), '  Test PTZ  ');
-    await user.selectOptions(screen.getByLabelText('Type'), 'Ffmpeg');
+    expect(screen.queryByLabelText('Type')).toBeNull();
     await user.type(screen.getByLabelText('Protocol'), ' fancy ');
     await user.click(screen.getByLabelText('Can Wake'));
 
@@ -314,7 +316,7 @@ describe('ClassicSettingsPtzControlsPage', () => {
     expect(sent[0].path).toBe('/controls');
     const body = sent[0].body!;
     expect(body.name).toBe('Test PTZ');
-    expect(body.type).toBe('Ffmpeg');
+    expect(body).not.toHaveProperty('type');
     expect(body.protocol).toBe('fancy');
     expect(body.can_wake).toBe(1);
     expect(body.has_presets).toBe(1);

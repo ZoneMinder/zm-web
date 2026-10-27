@@ -13,8 +13,12 @@ import type { PaginatedResponse } from '@/types';
 export interface Control {
   id: number;
   name: string;
-  /** Null from ZoneMinder 1.39.39 on, which dropped `Controls.Type`. */
-  type: string | null;
+  /**
+   * Always null: ZoneMinder 1.39.39 dropped `Controls.Type`, which nothing
+   * ever read. zm-api still sends the key and ignores it on writes, so the
+   * UI neither shows nor sends it.
+   */
+  type?: null;
   protocol?: string | null;
 
   // Movement capabilities
@@ -126,8 +130,8 @@ export interface Control {
   max_iris_speed?: number | null;
 }
 
-/** `CreateControlRequest`: only `name` and `type` are required; the rest default server-side. */
-export type CreateControlPayload = Pick<Control, 'name' | 'type'> & Partial<Omit<Control, 'id' | 'name' | 'type'>>;
+/** `CreateControlRequest`: only `name` is required; the rest default server-side. */
+export type CreateControlPayload = Pick<Control, 'name'> & Partial<Omit<Control, 'id' | 'name'>>;
 /** `UpdateControlRequest`: every field optional. */
 export type UpdateControlPayload = Partial<Omit<Control, 'id'>>;
 
