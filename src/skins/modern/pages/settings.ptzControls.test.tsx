@@ -167,7 +167,7 @@ describe('PTZ controls page — editor and guards', () => {
     await waitFor(() => expect(body).not.toBeNull());
     expect(body!.name).toBe('e2e-probe-ptz');
     expect(body!.protocol).toBe('PelcoP');
-    expect(body!.type).toBe('Local');
+    expect(body!).not.toHaveProperty('type');
     expect(body!.can_pan).toBe(1);
     expect(body!.can_tilt).toBe(0);
     expect(body!.max_pan_speed).toBe(63);

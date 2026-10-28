@@ -16,12 +16,12 @@ export type ControlTabKey =
   | 'main' | 'move' | 'pan' | 'tilt' | 'zoom' | 'focus'
   | 'gain' | 'white' | 'iris' | 'presets';
 
-export type ControlFieldKey = Exclude<keyof Control, 'id'>;
+/** Every editable column; `type` is gone from ZoneMinder and never edited. */
+export type ControlFieldKey = Exclude<keyof Control, 'id' | 'type'>;
 
 export type ControlField =
   | { key: 'name'; kind: 'text'; required: true }
   | { key: 'protocol'; kind: 'text'; required?: false }
-  | { key: 'type'; kind: 'type' }
   | { key: ControlFieldKey; kind: 'flag' }
   | { key: ControlFieldKey; kind: 'number' };
 
@@ -29,14 +29,6 @@ export interface ControlTab {
   key: ControlTabKey;
   fields: ControlField[];
 }
-
-/**
- * The Type select, exactly the five `controlcap.php:219-225` offers — a
- * control profile is a PTZ driver, and the backend's `MonitorType` enum
- * carries three more (`WebSite`, `VNC`, `File`) that no ZoneMinder PTZ
- * driver can be.
- */
-export const CONTROL_TYPES = ['Local', 'Remote', 'Ffmpeg', 'Libvlc', 'cURL'] as const;
 
 const flag = (key: ControlFieldKey): ControlField => ({ key, kind: 'flag' });
 const num = (key: ControlFieldKey): ControlField => ({ key, kind: 'number' });
@@ -63,7 +55,6 @@ export const CONTROL_TABS: readonly ControlTab[] = [
     key: 'main',
     fields: [
       { key: 'name', kind: 'text', required: true },
-      { key: 'type', kind: 'type' },
       { key: 'protocol', kind: 'text' },
       flag('can_wake'), flag('can_sleep'), flag('can_reset'), flag('can_reboot'),
     ],
@@ -127,7 +118,6 @@ const AXIS_WORD: Record<string, (t: TFunction) => string> = {
 export function controlFieldLabel(t: TFunction, key: ControlFieldKey): string {
   switch (key) {
     case 'name': return t('Name');
-    case 'type': return t('Type');
     case 'protocol': return t('Protocol');
     case 'can_wake': return t('Can Wake');
     case 'can_sleep': return t('Can Sleep');
@@ -177,7 +167,7 @@ export function emptyControlForm(): ControlFormValues {
   const out = {} as ControlFormValues;
   for (const tab of CONTROL_TABS) {
     for (const f of tab.fields) {
-      out[f.key] = f.kind === 'flag' ? 0 : f.kind === 'type' ? 'Local' : f.kind === 'number' ? '' : '';
+      out[f.key] = f.kind === 'flag' ? 0 : '';
     }
   }
   return out;
