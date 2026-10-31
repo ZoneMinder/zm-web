@@ -92,14 +92,40 @@ VALUES
   (9001, '/var/cache/zoneminder/events-e2e', 'e2e-events', 'local', NULL, NULL, 'Medium', 9001, 1, 1);
 
 -- ---------------------------------------------------------------------------
--- PTZ control profile: a copy of the stock Ffmpeg/Pelco-D row (positional
--- VALUES, same column order as zm_create.sql.in) with our own id and name.
--- Positional, so every column ZoneMinder adds to Controls has to be added
--- here too, and every column it drops removed: Type went in 1.39.39 (ZoneMinder
--- 1043273, 2026-10-10), the four audio columns at the end are the newest.
+-- PTZ control profile: a copy of the stock Pelco-D row (db/controls.sql)
+-- with our own id and name.
+-- Columns are named, so a column ZoneMinder adds (with a default) or drops
+-- elsewhere in Controls does not break the load.
 -- ---------------------------------------------------------------------------
-INSERT INTO Controls VALUES
-  (9001,'e2e-PTZ Dome (Pelco-D)','PelcoD',1,1,0,0,1,1,0,0,1,NULL,NULL,NULL,NULL,1,0,3,1,1,0,0,1,NULL,NULL,NULL,NULL,0,NULL,NULL,1,1,0,1,0,NULL,NULL,NULL,NULL,0,NULL,NULL,0,0,0,0,0,NULL,NULL,NULL,NULL,0,NULL,NULL,1,1,0,1,0,NULL,NULL,NULL,NULL,0,NULL,NULL,0,0,1,20,1,1,1,1,0,0,0,1,1,NULL,NULL,NULL,NULL,1,0,63,1,254,1,NULL,NULL,NULL,NULL,1,0,63,1,254,0,0,0,NULL,NULL,0);
+INSERT INTO Controls
+  (Id, Name, Protocol, CanWake, CanSleep, CanReset, CanReboot, CanZoom,
+   CanAutoZoom, CanZoomAbs, CanZoomRel, CanZoomCon, MinZoomRange,
+   MaxZoomRange, MinZoomStep, MaxZoomStep, HasZoomSpeed, MinZoomSpeed,
+   MaxZoomSpeed, CanFocus, CanAutoFocus, CanFocusAbs, CanFocusRel,
+   CanFocusCon, MinFocusRange, MaxFocusRange, MinFocusStep, MaxFocusStep,
+   HasFocusSpeed, MinFocusSpeed, MaxFocusSpeed, CanIris, CanAutoIris,
+   CanIrisAbs, CanIrisRel, CanIrisCon, MinIrisRange, MaxIrisRange,
+   MinIrisStep, MaxIrisStep, HasIrisSpeed, MinIrisSpeed, MaxIrisSpeed,
+   CanGain, CanAutoGain, CanGainAbs, CanGainRel, CanGainCon, MinGainRange,
+   MaxGainRange, MinGainStep, MaxGainStep, HasGainSpeed, MinGainSpeed,
+   MaxGainSpeed, CanWhite, CanAutoWhite, CanWhiteAbs, CanWhiteRel,
+   CanWhiteCon, MinWhiteRange, MaxWhiteRange, MinWhiteStep, MaxWhiteStep,
+   HasWhiteSpeed, MinWhiteSpeed, MaxWhiteSpeed, CanLight, CanIndicatorLight,
+   HasPresets, NumPresets, HasHomePreset, CanSetPresets, CanMove,
+   CanMoveDiag, CanMoveMap, CanMoveAbs, CanMoveRel, CanMoveCon, CanPan,
+   MinPanRange, MaxPanRange, MinPanStep, MaxPanStep, HasPanSpeed,
+   MinPanSpeed, MaxPanSpeed, HasTurboPan, TurboPanSpeed, CanTilt,
+   MinTiltRange, MaxTiltRange, MinTiltStep, MaxTiltStep, HasTiltSpeed,
+   MinTiltSpeed, MaxTiltSpeed, HasTurboTilt, TurboTiltSpeed, CanAutoScan,
+   NumScanPaths, CanAudioPlay, MinAudioFile, MaxAudioFile, CanAudioVolume)
+VALUES
+  (9001, 'e2e-PTZ Dome (Pelco-D)', 'PelcoD', 1, 1, 0, 0, 1, 1, 0, 0, 1, NULL,
+   NULL, NULL, NULL, 1, 0, 3, 1, 1, 0, 0, 1, NULL, NULL, NULL, NULL, 0,
+   NULL, NULL, 1, 1, 0, 1, 0, NULL, NULL, NULL, NULL, 0, NULL, NULL, 0, 0,
+   0, 0, 0, NULL, NULL, NULL, NULL, 0, NULL, NULL, 1, 1, 0, 1, 0, NULL,
+   NULL, NULL, NULL, 0, NULL, NULL, 0, 0, 1, 20, 1, 1, 1, 1, 0, 0, 0, 1, 1,
+   NULL, NULL, NULL, NULL, 1, 0, 63, 1, 254, 1, NULL, NULL, NULL, NULL, 1,
+   0, 63, 1, 254, 0, 0, 0, NULL, NULL, 0);
 
 -- ---------------------------------------------------------------------------
 -- Monitors. Four Ffmpeg cameras; 9002 is ROTATE_90 and 9003 is ROTATE_270 for
